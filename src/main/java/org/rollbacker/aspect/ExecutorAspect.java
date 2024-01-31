@@ -14,9 +14,6 @@ public class ExecutorAspect {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(ExecutorAspect.class);
 
-    @DeclareError("@annotation(org.rollbacker.annotation.Exceptioner) && !execution(* *(java.lang.Throwable+))")
-    static final String ERROR_MESSAGE = "Exceptioner should only have 1 argument which takes a throwable";
-
     @Around("@annotation(executor)")
     public Object around(ProceedingJoinPoint joinPoint, Executor executor) {
         try {
