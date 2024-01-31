@@ -1,7 +1,8 @@
 package org.rollbacker.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.rollbacker.annotation.Exceptioner;
 import org.rollbacker.annotation.Executor;
 import org.rollbacker.annotation.Rollbacker;
@@ -29,7 +30,7 @@ public class ExecutorAspect {
             String tag = executor.value();
             Object aThis = joinPoint.getThis();
             exceptioner(aThis, tag, e);
-            log.error("Error while running method {}. Rolling back...", joinPoint.toShortString());
+            log.warn("Error while running method {}. Rolling back...", joinPoint.toShortString());
             rollback(aThis, tag, joinPoint.toShortString());
         }
         return null;
