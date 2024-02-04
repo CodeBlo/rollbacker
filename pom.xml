@@ -19,6 +19,24 @@
         </license>
     </licenses>
 
+    <name>Rollbacker</name>
+    <description>A simple annotation package to specify a rollback method for a given method</description>
+    <url>https://github.com/CodeBlo/rollbacker</url>
+
+    <developers>
+        <developer>
+            <name>Abdulkadir Elmaci</name>
+            <email>abdulkadirelmaci@gmail.com</email>
+            <organization>Sonatype</organization>
+            <organizationUrl>http://www.sonatype.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/CodeBlo/rollbacker.git</connection>
+        <developerConnection>scm:git:ssh://github.com:CodeBlo/rollbacker.git</developerConnection>
+        <url>https://github.com/CodeBlo/rollbacker/tree/master</url>
+    </scm>
 
     <dependencies>
         <dependency>
