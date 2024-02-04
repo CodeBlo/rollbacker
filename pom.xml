@@ -109,20 +109,14 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <complianceLevel>16</complianceLevel>
-                    <source>16</source>
-                    <target>16</target>
+                    <complianceLevel>15</complianceLevel>
                     <showWeaveInfo>true</showWeaveInfo>
-                    <verbose>true</verbose>
-                    <Xlint>ignore</Xlint>
                     <encoding>UTF-8</encoding>
                 </configuration>
                 <executions>
                     <execution>
                         <goals>
-                            <!-- use this goal to weave all your main classes -->
                             <goal>compile</goal>
-                            <!-- use this goal to weave all your test classes -->
                             <goal>test-compile</goal>
                         </goals>
                     </execution>
