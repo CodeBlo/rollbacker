@@ -10,11 +10,21 @@ import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
 
+/**
+ * Aspect for the executor methods.
+ */
 @Aspect
 public class ExecutorAspect {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(ExecutorAspect.class);
 
+    /**
+     * Finds the exceptioner and rollbacker methods for the executor method
+     *
+     * @param joinPoint join point
+     * @param executor  annotation
+     * @return what method returned or null if any exceptions occurred
+     */
     @Around("@annotation(executor)")
     public Object around(ProceedingJoinPoint joinPoint, Executor executor) {
         try {
