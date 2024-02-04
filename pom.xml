@@ -3,7 +3,7 @@
 
     <groupId>io.github.codeblo</groupId>
     <artifactId>rollbacker</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
