@@ -1,9 +1,11 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.rollbacker</groupId>
+    <groupId>io.github.codeblo</groupId>
     <artifactId>rollbacker</artifactId>
     <version>0.0.1-ALPHA</version>
+    <packaging>jar</packaging>
+
     <properties>
             <maven.compiler.source>19</maven.compiler.source>
             <maven.compiler.target>19</maven.compiler.target>
