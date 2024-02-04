@@ -29,14 +29,12 @@
         <developer>
             <name>Abdulkadir Elmaci</name>
             <email>abdulkadirelmaci@gmail.com</email>
-            <organization>Sonatype</organization>
-            <organizationUrl>http://www.sonatype.com</organizationUrl>
+            <organizationUrl>https://github.com/CodeBlo</organizationUrl>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/CodeBlo/rollbacker.git</connection>
-        <developerConnection>scm:git:ssh://github.com:CodeBlo/rollbacker.git</developerConnection>
+        <connection>scm:git:https://github.com/CodeBlo/rollbacker.git</connection>
         <url>https://github.com/CodeBlo/rollbacker/tree/master</url>
     </scm>
 
