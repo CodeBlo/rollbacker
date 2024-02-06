@@ -15,5 +15,5 @@ import java.lang.annotation.Target;
 public @interface Executor {
     String value() default "";
 
-    Class<? extends Throwable>[] ignoredExceptions() default {};
+    Class<? extends Exception>[] ignoredExceptions() default {};
 }
