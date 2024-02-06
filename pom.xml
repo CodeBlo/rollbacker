@@ -113,7 +113,7 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <complianceLevel>15</complianceLevel>
+                    <complianceLevel>16</complianceLevel>
                     <showWeaveInfo>true</showWeaveInfo>
                     <encoding>UTF-8</encoding>
                 </configuration>
