@@ -63,7 +63,9 @@ public class ExecutorAspect {
             } catch (Exception ex) {
                 log.error("Error while invoking exceptioner method", ex);
             }
-            break;
+            if (!exceptioner.fallthrough()) {
+                break;
+            }
         }
     }
 
