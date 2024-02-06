@@ -6,9 +6,16 @@ import org.aspectj.lang.annotation.Aspect;
 import org.rollbacker.annotation.Exceptioner;
 import org.rollbacker.annotation.Executor;
 import org.rollbacker.annotation.Rollbacker;
+import org.rollbacker.core.DefaultMethodProvider;
+import org.rollbacker.core.cache.ExceptionerCache;
+import org.rollbacker.core.cache.RollbackerCache;
+import org.rollbacker.core.util.CompareUtil;
 import org.slf4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Aspect for the executor methods.
@@ -40,7 +47,7 @@ public class ExecutorAspect {
             Object aThis = joinPoint.getThis();
             exceptioner(aThis, tag, e);
             log.warn("Error while running method {}. Rolling back...", joinPoint.toShortString());
-            rollback(aThis, tag, joinPoint.toShortString());
+            rollback(aThis, tag);
         } catch (Throwable e) {
             log.error("Unexpected error while running method {}", joinPoint.toShortString(), e);
         }
@@ -48,30 +55,57 @@ public class ExecutorAspect {
     }
 
     private void exceptioner(Object aspectedObject, String tag, Exception exception) {
-        Method[] declaredMethods = aspectedObject.getClass().getDeclaredMethods();
-        for (Method declaredMethod : declaredMethods) {
-            Exceptioner exceptioner = declaredMethod.getAnnotation(Exceptioner.class);
-            if (exceptioner == null || !exceptioner.value().equals(tag)) {
+        ExceptionerCache cache = ExceptionerCache.instance;
+        List<ExceptionerCache.ExceptionerMethod> methods = cache.computeIfAbsent(aspectedObject.getClass(), tag, this::getExceptionerMethods);
+
+        for (ExceptionerCache.ExceptionerMethod exceptionerMethod : methods) {
+            if (!exceptionerMethod.handles().isAssignableFrom(exception.getClass())) {
                 continue;
             }
-            Class<?> parameterType = declaredMethod.getParameterTypes()[0];
-            if (!parameterType.isAssignableFrom(exception.getClass())) {
-                continue;
-            }
-            declaredMethod.setAccessible(true);
+
             try {
-                declaredMethod.invoke(aspectedObject, exception);
-            } catch (Exception ex) {
-                log.error("Error while invoking exceptioner method", ex);
+                exceptionerMethod.method().invoke(aspectedObject, exception);
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                log.error("Error while invoking exceptioner method {}", exceptionerMethod, e);
             }
-            if (!exceptioner.fallthrough()) {
+            if (!exceptionerMethod.fallthrough()) {
                 break;
             }
         }
+
     }
 
-    private void rollback(Object aspectedObject, String tag, String methodName) {
-        Method[] declaredMethods = aspectedObject.getClass().getDeclaredMethods();
+    private List<ExceptionerCache.ExceptionerMethod> getExceptionerMethods(Class<?> clazz, String tag) {
+        List<ExceptionerCache.ExceptionerMethod> exceptionerMethods = new ArrayList<>();
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+        for (Method declaredMethod : declaredMethods) {
+            Exceptioner exceptioner = declaredMethod.getAnnotation(Exceptioner.class);
+
+            if (exceptioner == null || !exceptioner.value().equals(tag)) {
+                continue;
+            }
+
+            declaredMethod.setAccessible(true);
+            exceptionerMethods.add(new ExceptionerCache.ExceptionerMethod(exceptioner.fallthrough(), declaredMethod, declaredMethod.getParameterTypes()[0]));
+        }
+        exceptionerMethods.sort((m1, m2) -> CompareUtil.compareClassesByHierarchy(m1.handles(), m2.handles()));
+        return exceptionerMethods;
+    }
+
+    private void rollback(Object aspectedObject, String tag) {
+        RollbackerCache cache = RollbackerCache.instance;
+        Method rollbacker = cache.computeIfAbsent(aspectedObject.getClass(), tag, this::getRollbackerMethod);
+
+        try {
+            rollbacker.invoke(aspectedObject);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            log.error("Error while executing rollbacker {}", rollbacker, e);
+        }
+    }
+
+
+    private Method getRollbackerMethod(Class<?> clazz, String tag) {
+        Method[] declaredMethods = clazz.getDeclaredMethods();
         for (Method declaredMethod : declaredMethods) {
             Rollbacker rollbacker = declaredMethod.getAnnotation(Rollbacker.class);
             if (rollbacker == null || !rollbacker.value().equals(tag)) {
@@ -79,14 +113,9 @@ public class ExecutorAspect {
             }
 
             declaredMethod.setAccessible(true);
-            try {
-                declaredMethod.invoke(aspectedObject);
-            } catch (Exception ex) {
-                log.error("Error while executing rollback for method:{}", methodName);
-            }
-            break;
+            return declaredMethod;
         }
+        return DefaultMethodProvider.DEFAULT_ROLLBACKER;
     }
-
 
 }
