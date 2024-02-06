@@ -29,10 +29,9 @@ public class ExecutorAspect {
     public Object around(ProceedingJoinPoint joinPoint, Executor executor) {
         try {
             return joinPoint.proceed();
-        } catch (Throwable e) {
-
-            Class<? extends Throwable>[] ignoredExceptions = executor.ignoredExceptions();
-            for (Class<? extends Throwable> ignoredException : ignoredExceptions) {
+        } catch (Exception e) {
+            Class<? extends Exception>[] ignoredExceptions = executor.ignoredExceptions();
+            for (Class<? extends Exception> ignoredException : ignoredExceptions) {
                 if (ignoredException.isAssignableFrom(e.getClass())) {
                     return null;
                 }
@@ -42,11 +41,13 @@ public class ExecutorAspect {
             exceptioner(aThis, tag, e);
             log.warn("Error while running method {}. Rolling back...", joinPoint.toShortString());
             rollback(aThis, tag, joinPoint.toShortString());
+        } catch (Throwable e) {
+            log.error("Unexpected error while running method {}", joinPoint.toShortString(), e);
         }
         return null;
     }
 
-    private void exceptioner(Object aspectedObject, String tag, Throwable throwable) {
+    private void exceptioner(Object aspectedObject, String tag, Exception exception) {
         Method[] declaredMethods = aspectedObject.getClass().getDeclaredMethods();
         for (Method declaredMethod : declaredMethods) {
             Exceptioner exceptioner = declaredMethod.getAnnotation(Exceptioner.class);
@@ -54,12 +55,12 @@ public class ExecutorAspect {
                 continue;
             }
             Class<?> parameterType = declaredMethod.getParameterTypes()[0];
-            if (!parameterType.isAssignableFrom(throwable.getClass())) {
+            if (!parameterType.isAssignableFrom(exception.getClass())) {
                 continue;
             }
             declaredMethod.setAccessible(true);
             try {
-                declaredMethod.invoke(aspectedObject, throwable);
+                declaredMethod.invoke(aspectedObject, exception);
             } catch (Exception ex) {
                 log.error("Error while invoking exceptioner method", ex);
             }
