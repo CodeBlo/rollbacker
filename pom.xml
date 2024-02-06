@@ -116,11 +116,11 @@
                     <complianceLevel>16</complianceLevel>
                     <showWeaveInfo>true</showWeaveInfo>
                     <encoding>UTF-8</encoding>
+                    <sources/>
                 </configuration>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>compile</goal>
                             <goal>test-compile</goal>
                         </goals>
                     </execution>
