@@ -65,6 +65,12 @@
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>2.22.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -107,14 +113,14 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <complianceLevel>15</complianceLevel>
+                    <complianceLevel>16</complianceLevel>
                     <showWeaveInfo>true</showWeaveInfo>
                     <encoding>UTF-8</encoding>
+                    <sources/>
                 </configuration>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>compile</goal>
                             <goal>test-compile</goal>
                         </goals>
                     </execution>
