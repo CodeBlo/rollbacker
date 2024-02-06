@@ -13,4 +13,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Exceptioner {
     String value() default "";
+
+    boolean fallthrough() default false;
 }
